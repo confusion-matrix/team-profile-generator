@@ -1,0 +1,14 @@
+#header {
+    text-align: center;
+}
+
+#employee-container {
+    display: flex;
+
+}
+
+.card {
+    width: 33%;
+    height: 100px;
+    border: 3px solid black;
+}
