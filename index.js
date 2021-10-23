@@ -5,74 +5,45 @@ const Manager = require("./lib/Manager.js");
 const Engineer = require("./lib/Engineer.js");
 const Intern = require("./lib/Intern.js");
 const { type } = require("os");
+const { Console } = require("console");
 
-const path = "./dist/output.html";
-
+const path = "./dist/employees.html";
+let employeeArray = [];
+let inputMethod = "";
 function init() {
-    let validate = false;
-    let inputMethod = "";
-    let employeeArray = [];
-
     try {
+        
         if (fs.existsSync(path)) {
             console.log("Exisiting file found, do you wish to add an empolyee or create a new document?\n"
                 + "Type 'add' to add employee or 'new' to create a 'new' document"
             );
-            while (!validate) {
-                inquirer
-                    .prompt([
-                        {
-                            name: "userInput",
-                            message: "Add/New: "
-                        }
-                    ])
-                    .then(answer => {
-                        if (answer.userInput.toLowerCase() === "add" || answer.userInput.toLowerCase() === "new") {
-                            validate = true;
-                            inputMethod = answer.userInput.toLowerCase();
-                            employeeArray.push(createEmployee());
-                            while (!add) {
-                                inquirer
-                                .prompt([
-                                    {
-                                        name: "keepAdding",
-                                        message: "Add another employee? (Y/N)"
-                                    }
-                                ])
-                                .then(addEmployee => {
-                                    if (addEmployee.keepAdding.toLowerCase() === "y") {
-                                        employeeArray.push(createEmployee());
-                                    } else if (addEmployee.keepAdding.toLowerCase() === "n") {
-                                        writeToFile(employeeArray, inputMethod);
-                                    } else {
-                                        console.log("! Error, enter Y  or N !");
-                                    }
-                                })
-                            }
-                        } else {
-                            console.log("! Error, input must be add or new !");
-                        }
-                    })
-            }
-
-            
-
+            inquirer
+                .prompt([
+                    {
+                        name: "userInput",
+                        message: "Add/New: "
+                    }
+                ])
+                .then(answer => {
+                    if (answer.userInput.toLowerCase() === "add" || answer.userInput.toLowerCase() === "new") {
+                        inputMethod = answer.userInput.toLowerCase();
+                        createEmployee();
+                    } else {
+                        console.log("! Error, input must be add or new !");
+                    }
+                })
+        } else {
+            inputMethod = "new";
+            console.log("Welcome, you will be prompted with a set of questions to generate an employee list document.");
+            createEmployee();
         }
     } catch(err) {
-        // file does not exists create brand new one
-        console.log("Welcome, you will be prompted with a set of questions to generate an employee list document.");
-        createEmployee("new");
+        // file does not exists create brand new one 
     }
 }
 
-
-// MIGHT HAVE TO MOVE THIS TO SRC, HELPER CODE
-
-function createEmployee() {
-    let validate = false;
-    // lets create the inquirer to get the user info
-    // this should be looped multiple times for each employee
-    inquirer
+async function createEmployee() {
+    await inquirer
         .prompt([
             {
                 name: "name",
@@ -85,29 +56,44 @@ function createEmployee() {
             {
                 name: "email",
                 message: "Email: "
-            },
+            }
         ])
         .then(answers => {
-            while(!validate) {
-                inquirer
-                    .prompt([
-                        {
-                            name: "employee",
-                            message: "Enter employee type (Manager, Engineer, Intern): "
-                        }
-                    ])
+            inquirer
+                .prompt([
+                    {
+                        name: "employee",
+                        message: "Enter employee type (Manager, Engineer, Intern): "
+                    }
+                ])
                 .then(answer => {
-                    switch(answer.employee.toLowerCase()) {
+                    switch (answer.employee.toLowerCase()) {
                         case "manager":
                             inquirer
                                 .prompt([
                                     {
                                         name: "officeNumber",
                                         message: "Enter office number: "
-                                    }    
+                                    }
                                 ])
                                 .then(property => {
-                                    return new Manager(answers.name, answers.id, answers.email, property.officeNumber);
+                                    employeeArray.push(new Manager(answers.name, answers.id, answers.email, property.officeNumber));
+                                    inquirer
+                                        .prompt([
+                                            {
+                                                name: "keepAdding",
+                                                message: "Add another employee? (Y/N)"
+                                            }
+                                        ])
+                                        .then(addEmployee => {
+                                            if (addEmployee.keepAdding.toLowerCase() === "y") {
+                                                createEmployee();
+                                            } else if (addEmployee.keepAdding.toLowerCase() === "n") {
+                                                writeToFile(employeeArray, inputMethod);
+                                            } else {
+                                                console.log("! Error, enter Y  or N !");
+                                            }
+                                        })
                                 })
                             validate = true;
                             break;
@@ -117,10 +103,26 @@ function createEmployee() {
                                     {
                                         name: "github",
                                         message: "Enter github account name: "
-                                    }    
+                                    }
                                 ])
                                 .then(property => {
-                                    return new Engineer(answers.name, answers.id, answers.email, property.github);
+                                    employeeArray.push(new Engineer(answers.name, answers.id, answers.email, property.github));
+                                    inquirer
+                                        .prompt([
+                                            {
+                                                name: "keepAdding",
+                                                message: "Add another employee? (Y/N)"
+                                            }
+                                        ])
+                                        .then(addEmployee => {
+                                            if (addEmployee.keepAdding.toLowerCase() === "y") {
+                                                createEmployee();
+                                            } else if (addEmployee.keepAdding.toLowerCase() === "n") {
+                                                writeToFile(employeeArray, inputMethod);
+                                            } else {
+                                                console.log("! Error, enter Y  or N !");
+                                            }
+                                        })
                                 })
                             validate = true;
                             break;
@@ -130,19 +132,35 @@ function createEmployee() {
                                     {
                                         name: "school",
                                         message: "Enter school name: "
-                                    }    
+                                    }
                                 ])
                                 .then(property => {
-                                    return new Intern(answers.name, answers.id, answers.email, property.school);
+                                    employeeArray.push(new Intern(answers.name, answers.id, answers.email, property.school));
+                                    inquirer
+                                        .prompt([
+                                            {
+                                                name: "keepAdding",
+                                                message: "Add another employee? (Y/N)"
+                                            }
+                                        ])
+                                        .then(addEmployee => {
+                                            if (addEmployee.keepAdding.toLowerCase() === "y") {
+                                                createEmployee();
+                                            } else if (addEmployee.keepAdding.toLowerCase() === "n") {
+                                                writeToFile(employeeArray, inputMethod);
+                                            } else {
+                                                console.log("! Error, enter Y  or N !");
+                                            }
+                                        })
                                 })
                             validate = true;
                             break;
                         default:
                             console.log("! Error, enter appropriate job title !");
                     }
-                }) 
-            }
-        });   
+                })
+        });
+        // recall 
 }
 
 // TO EDIT FILE !!!! READ THEN WRITE - So first read the file in the write to it
@@ -150,9 +168,10 @@ function createEmployee() {
 
 // pass the array that contains all the data of the employees
 // This stays in index.js
-function writeToFile(arrayOfEmployees, inputMethod) {
+function writeToFile(arrayOfEmployees, fileType) {
     // generate brand new file
-    fs.writeFile("employees.html", createHTML(arrayOfEmployees, inputMethod), err => {
+    console.log(arrayOfEmployees);
+    fs.writeFile("./dist/employees.html", createHTML(arrayOfEmployees, fileType), err => {
         if (err)
             console.log(err);
         else
@@ -160,8 +179,9 @@ function writeToFile(arrayOfEmployees, inputMethod) {
     })
 }
 
-function createHTML(arrayOfEmployees, inputMethod) {
-    if (inputMethod === "add") {
+function createHTML(arrayOfEmployees, inputType) {
+    if (inputType === "add") {
+        let dataString = "";
         // get the file and turn it into an array
         // here find the array that contains 
         
@@ -172,6 +192,7 @@ function createHTML(arrayOfEmployees, inputMethod) {
                 return;
             }
             console.log(data);
+            //dataString = data.split("")
         })
 
 
@@ -180,7 +201,7 @@ function createHTML(arrayOfEmployees, inputMethod) {
         return `<!DOCTYPE html>
         <html lang="en-US">
             <head>
-                <link rel="stylesheet" href="/dist/style.css">
+                <link rel="stylesheet" href="style.css">
             </head>  
             <body>
                 <div id="header">
@@ -198,9 +219,9 @@ function createHTML(arrayOfEmployees, inputMethod) {
 function convertArrayToString(arrayOfEmployees) {
     let employeeString = "";
     arrayOfEmployees.forEach(element => {
-        employeeString += `<div class="class">
-            <h3>${element.getName()}<h3>
-            <h4>${element.getRole()}>
+        employeeString += `<div class="card">
+            <h3>${element.getName()}</h3>
+            <h4>${element.getRole()}</h4>
             <ul>
                 <li>ID: ${element.getId()}</li>
                 <li>Email: ${element.getEmail()}</li>
@@ -212,7 +233,8 @@ function convertArrayToString(arrayOfEmployees) {
 }
 
 function getExtendedPropery(employee) {
-    switch (typeof employee) {
+    console.log(employee.constructor.name)
+    switch (employee.constructor.name) {
         case "Manager":
             return "Office Code: " + employee.getOfficeCode();
         case "Engineer":
@@ -221,3 +243,5 @@ function getExtendedPropery(employee) {
             return "School: " + employee.getSchool();
     }
 }
+
+init();
