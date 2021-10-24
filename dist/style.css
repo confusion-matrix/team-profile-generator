@@ -1,13 +1,19 @@
 #header {
     text-align: center;
+    background-color: gray;
+    height: 100px;
 }
 
 #employee-container {
+    margin-top: 5px;
+    padding: 10px, 25px;
     display: flex;
 
 }
 
 .card {
-    width: 33%;
+    width: 25%;
+    background-color: rgb(187, 179, 179);
     border: 3px solid black;
+    border-radius: 5px;
 }

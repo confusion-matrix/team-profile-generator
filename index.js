@@ -38,7 +38,6 @@ function init() {
             createEmployee();
         }
     } catch(err) {
-        // file does not exists create brand new one 
     }
 }
 
@@ -160,14 +159,8 @@ async function createEmployee() {
                     }
                 })
         });
-        // recall 
 }
 
-// TO EDIT FILE !!!! READ THEN WRITE - So first read the file in the write to it
-
-
-// pass the array that contains all the data of the employees
-// This stays in index.js
 function writeToFile(arrayOfEmployees, fileType) {
     // generate brand new file
     console.log(arrayOfEmployees);
@@ -226,6 +219,8 @@ function convertArrayToString(arrayOfEmployees) {
                 <li>ID: ${element.getId()}</li>
                 <li>Email: ${element.getEmail()}</li>
                 <li>${getExtendedPropery(element)}</li>
+            </ul>
+        </div>
         `
     })
     console.log(employeeString);
@@ -236,7 +231,7 @@ function getExtendedPropery(employee) {
     console.log(employee.constructor.name)
     switch (employee.constructor.name) {
         case "Manager":
-            return "Office Code: " + employee.getOfficeCode();
+            return "Office Code: " + employee.getOfficeNumber();
         case "Engineer":
             return "Github: https://github.com/" + employee.getGithub();
         case "Intern":
